@@ -8,6 +8,7 @@ use App\Http\Resources\PostResource;
 use App\Models\Post;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 
 
@@ -92,26 +93,24 @@ class PostQueryController extends Controller
 
     public function update(Request $request, $id)
     {
-        
-        // $validator = Validator::make($request->all(), [
-            
-        //     'body' => 'required',
-        //     'title' => 'required',
-        //     'images' => 'nullable|image|max:2048',
-        // ], [
-            
-        //     'body.required' => 'Body is required',
-        //     'title.required' => 'Title is required',
-        //     'images.image' => 'The images must be an image file',
-        //     'images.max' => 'The images must not be greater than 2048 kilobytes',
-        // ]);
+        Log::info('Request Data: ', $request->all());
+        $validator = Validator::make($request->all(), [
+            'title' => 'required',
+            'body' => 'required',
+            'images' => 'nullable|image|max:2048',
+        ], [
+            'title.required' => 'Title is required',
+            'body.required' => 'Body is required',
+            'images.image' => 'The images must be an image file',
+            'images.max' => 'The images must not be greater than 2048 kilobytes',
+        ]);
 
-        // if ($validator->fails()) {
-        //     return response()->json([
-        //         'status' => false,
-        //         'message' => $validator->errors()->first(),
-        //     ], 422);
-        // }
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => $validator->errors()->first(),
+            ], 422);
+        }
 
         $post = Post::findOrFail($id);
 

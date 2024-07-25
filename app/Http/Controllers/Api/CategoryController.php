@@ -90,7 +90,9 @@ class CategoryController extends Controller
 
     public function update(Request $request, $id)
     {
-        $request->validate([
+       
+
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'pd_name' => 'required|string|max:255',
             'images' => 'nullable|image|max:2048',
@@ -98,24 +100,31 @@ class CategoryController extends Controller
             'price' => 'required|numeric',
             'speed' => 'required|integer',
             'type' => 'required|string|max:255',
-            
+        ], [
+            'name.required' => 'Name is required',
+            'pd_name.required' => 'Product name is required',
+            'images.image' => 'The images must be an image file',
+            'images.max' => 'The images must not be greater than 2048 kilobytes',
+            'price.required' => 'Price is required',
+            'speed.required' => 'Speed is required',
+            'type.required' => 'Type is required',
         ]);
 
-        // if ($validator->fails()) {
-        //     $errors = $validator->errors();
-        //     $errorMessage = [];
+        if ($validator->fails()) {
+            $errors = $validator->errors();
+            $errorMessage = [];
 
-        //     foreach (['name', 'pd_name', 'images', 'price', 'speed', 'type'] as $field) {
-        //         if ($errors->has($field)) {
-        //             $errorMessage[] = $errors->first($field);
-        //         }
-        //     }
+            foreach (['name', 'pd_name', 'images', 'price', 'speed', 'type'] as $field) {
+                if ($errors->has($field)) {
+                    $errorMessage[] = $errors->first($field);
+                }
+            }
 
-        //     return response()->json([
-        //         'status' => false,
-        //         'message' => implode(' ', $errorMessage),
-        //     ], 422);
-        // }
+            return response()->json([
+                'status' => false,
+                'message' => implode(' ', $errorMessage),
+            ], 422);
+        }
 
         $categoryname = $request->input('name');
 
