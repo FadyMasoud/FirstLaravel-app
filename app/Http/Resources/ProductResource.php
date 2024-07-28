@@ -16,14 +16,13 @@ class ProductResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'id_category' => $this->id_category,
+            'id_showroom' => $this->id_showroom,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
             'name' => $this->name,
             'description' => $this->description,
             'price' => $this->price,
-            'category' => new CategoryResource($this->whenLoaded('category')),
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
-            'id_category' => $this->id_category,
-            'id_showroom' => $this->id_showroom,
             'images' => $this->images,
             'speed' => $this->speed,
             'type' => $this->type,
@@ -32,6 +31,7 @@ class ProductResource extends JsonResource
             'brand' => $this->brand,
             'model' => $this->model,
             'offer' => $this->offer,
+            'image_link' => asset('storage/' . $this->images)
         ];
     }
 }

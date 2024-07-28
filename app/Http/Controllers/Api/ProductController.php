@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Models\Product;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Str;
 
 class ProductController extends Controller
@@ -84,7 +86,7 @@ class ProductController extends Controller
             // $product->images = $imagePath;
         }
 
-        Product::create([
+       $product= Product::create([
             'id_category' => $request->id_category,
             'id_showroom' => $request->id_showroom,
             'name' => $request->name,
@@ -104,7 +106,7 @@ class ProductController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Product created successfully',
-            'product' => new ProductResource(Product::latest()->first()),
+            'product' => new ProductResource($product),
         ]);
     }
 
@@ -154,7 +156,7 @@ class ProductController extends Controller
     // }
 
 
-    public function update(Request $request, Product $product )
+    public function update(Request $request, $id )
     {
 
 
@@ -172,85 +174,45 @@ class ProductController extends Controller
             'brand' => 'required|string',
             'model' => 'required|string',
             'offer' => 'nullable|numeric',
-        ], [
-            'id_category.required' => 'Category is required',
-            'id_showroom.required' => 'Showroom is required',
-            'name.required' => 'Name is required',
-            'images.image' => 'The images must be an image file',
-            'images.max' => 'The images must not be greater than 2048 kilobytes',
-            'price.required' => 'Price is required',
-            'speed.required' => 'Speed is required',
-            'type.required' => 'Type is required',
-            'cylinder.required' => 'Cylinder is required',
-            'color.required' => 'Color is required',
-            'brand.required' => 'Brand is required',
-            'model.required' => 'Model is required',
-        ]);
+            ],
+            [
+                'id_category.required' => 'Category is required',
+                'id_showroom.required' => 'Showroom is required',
+                'name.required' => 'Name is required',
+                'images.image' => 'The images must be an image file',
+                'images.max' => 'The images must not be greater than 2048 kilobytes',
+                'price.required' => 'Price is required',
+                'speed.required' => 'Speed is required',
+                'type.required' => 'Type is required',
+                'cylinder.required' => 'Cylinder is required',
+                'color.required' => 'Color is required',
+                'brand.required' => 'Brand is required',
+                'model.required' => 'Model is required',
+            ] );
 
-        if ($validator->fails()) {
-            $errors = $validator->errors();
-            $errorMessage = [];
-
-            if ($errors->has('id_category')) {
-                $errorMessage[] = $errors->first('id_category');
+            if ($validator->fails()) {
+                $errors = $validator->errors();
+                $errorMessage = [];
+    
+                foreach ([
+                    'id_category', 'id_showroom', 'name', 'images', 'price', 'speed',
+                    'type', 'cylinder', 'color', 'brand', 'model'
+                ] as $field) {
+                    if ($errors->has($field)) {
+                        $errorMessage[] = $errors->first($field);
+                    }
+                }
+    
+                return response()->json([
+                    'status' => false,
+                    'message' => implode(' ', $errorMessage),
+                ], 422);
             }
 
-            if ($errors->has('id_showroom')) {
-                $errorMessage[] = $errors->first('id_showroom');
-            }
 
-            if ($errors->has('name')) {
-                $errorMessage[] = $errors->first('name');
-            }
 
-            if ($errors->has('images')) {
-                $errorMessage[] = $errors->first('images');
-            }
 
-            if ($errors->has('price')) {
-                $errorMessage[] = $errors->first('price');
-            }
-
-            if ($errors->has('speed')) {
-                $errorMessage[] = $errors->first('speed');
-            }
-
-            if ($errors->has('type')) {
-                $errorMessage[] = $errors->first('type');
-            }
-
-            if ($errors->has('cylinder')) {
-                $errorMessage[] = $errors->first('cylinder');
-            }
-
-            if ($errors->has('color')) {
-                $errorMessage[] = $errors->first('color');
-            }
-
-            if ($errors->has('brand')) {
-                $errorMessage[] = $errors->first('brand');
-            }
-
-            if ($errors->has('model')) {
-                $errorMessage[] = $errors->first('model');
-            }
-
-            return response()->json([
-                'status' => false,
-                'message' => implode(' ', $errorMessage),
-            ], 422);
-        }
-        return response()->json([
-            'status' => false,
-            'message' => $request->all(),
-        ], 422);
-
-        $product = Product::findOrFail($product);
-
-        if ($request->hasFile('images')) {
-            $imagePath = $request->file('images')->store('products', 'public');
-            $product->images = $imagePath;
-        }
+        $product = Product::findOrFail($id);
 
         $product->id_category = $request->id_category;
         $product->id_showroom = $request->id_showroom;
@@ -265,10 +227,25 @@ class ProductController extends Controller
         $product->model = $request->model;
         $product->offer = $request->offer;
 
+        if ($request->hasFile('images')) {
+            // Delete the old image from storage
+            if ($product->images) {
+                Storage::delete('public/' . $product->images);
+            }
+            $imagePath = $request->file('images')->store('products', 'public');
+            $product->images = $imagePath;
+        }
+
         // Save the updated post to the database
         $product->save();
+        
 
-        return new ProductResource($product);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Product updated successfully',
+            'product' => new ProductResource($product),
+        ]);
     }
 
 

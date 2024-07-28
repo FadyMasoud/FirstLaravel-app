@@ -7,7 +7,10 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ShowroomController;
 use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\MaintenanceeControlle;
 use App\Http\Controllers\Api\OrderController;
+
+
 
 
 
@@ -20,6 +23,8 @@ use App\Models\Product;
 use App\Models\Showroom;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
+
 
 
 /*
@@ -39,6 +44,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 // Posts Routes
 Route::get('posts', [PostQueryController::class, 'index']);
+Route::get('posts/lastthreeposts', [PostQueryController::class, 'getLastThreePosts']);
 Route::get('posts/{id}', [PostQueryController::class, 'getPostById']);
 Route::post('posts', [PostQueryController::class, 'store']);
 Route::put('posts/{id}', [PostQueryController::class, 'update']);
@@ -49,6 +55,7 @@ Route::post('posts/{id}/restore', [PostQueryController::class, 'restore']);
 
 // Category Routes
 Route::get('categories', [CategoryController::class, 'index']);
+Route::get('categories/bodykit', [CategoryController::class, 'getBodyKit']);
 Route::post('categories', [CategoryController::class, 'store']);
 Route::get('categories/{id}', [CategoryController::class, 'show']);
 Route::put('categories/{id}', [CategoryController::class, 'update']);
@@ -60,7 +67,7 @@ Route::get('products', [ProductController::class, 'index']);
 Route::get('productsbycategory/{id_category}', [ProductController::class, 'getProductsByCategory']);
 Route::post('products', [ProductController::class, 'store']);
 Route::get('products/{id}', [ProductController::class, 'show']);
-Route::put('/products/{id}', [ProductController::class, 'update']);
+Route::put('products/{id}', [ProductController::class, 'update']);
 
 Route::delete('products/{id}', [ProductController::class, 'destroy']);
 Route::post('products/{id}/restore', [ProductController::class, 'restore']);
@@ -77,9 +84,11 @@ Route::post('showrooms/{id}/restore', [ShowroomController::class, 'restore']);
 
 //reviews
 Route::get('reviews', [ReviewController::class, 'index']);
+//use it to create review for any product under product at productdetails.component
 Route::post('reviews', [ReviewController::class, 'store']);
 //update reviews is work done 
 Route::put('reviews/{id}', [ReviewController::class, 'update']);
+//use to show a reviews about each product under product at productdetails.component
 Route::get('reviews/{product_id}', [ReviewController::class, 'show']);
 
 //Auth
@@ -95,9 +104,20 @@ Route::put('users/{id}', [AuthController::class, 'update']);
 
 //orders
 Route::get('orders', [OrderController::class, 'index']);
+//use it to create order for any product
 Route::post('orders', [OrderController::class, 'store']);
 Route::get('orders/{id}', [OrderController::class, 'show']);
 //update order is work done
 Route::put('orders/{id}', [OrderController::class, 'update']);
 Route::delete('orders/{id}', [OrderController::class, 'destroy']);
 Route::get('orders/totalsale', [OrderController::class, 'sumTotalsale']);
+
+
+//Maintenance
+Route::get('maintenances', [MaintenanceeControlle::class, 'index']);
+Route::post('maintenOrder', [MaintenanceeControlle::class, 'store']);
+Route::get('maintenances/{user_id}', [MaintenanceeControlle::class, 'MaintenanceOrderUser']);
+Route::delete('maintenances/{id}', [MaintenanceeControlle::class, 'destroy']);
+
+
+

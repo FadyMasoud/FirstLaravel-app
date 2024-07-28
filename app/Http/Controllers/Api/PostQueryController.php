@@ -25,6 +25,12 @@ class PostQueryController extends Controller
         //
         return PostResource::collection(post::all());
     }
+    
+    public function getLastThreePosts()
+    {
+        $posts = Post::orderBy('created_at', 'desc')->take(3)->get();
+        return PostResource::collection($posts);
+    }
 
     public function getPostById($id)
     {
@@ -94,6 +100,8 @@ class PostQueryController extends Controller
     public function update(Request $request, $id)
     {
         Log::info('Request Data: ', $request->all());
+
+        
         $validator = Validator::make($request->all(), [
             'title' => 'required',
             'body' => 'required',
@@ -125,9 +133,10 @@ class PostQueryController extends Controller
             $post->images = $imagePath;
         }
 
-        $post->title = $request->input('title');
-        $post->body = $request->input('body');
-        $post->user_id = Auth::id(); // Assign the post to the currently authenticated user
+        $post->title = $request->title;
+        $post->body = $request->body;
+        $post->user_id = $request->user_id;
+
 
         // Save the updated post to the database
         $post->save();

@@ -32,7 +32,11 @@ class ShowroomController extends Controller
 
         $showroom = Showroom::create($request->all());
 
-        return new ShowroomResource($showroom);
+        return response()->json([
+            'status' => true,
+            'message' => 'Showroom created successfully',
+            'showroom' => new ShowroomResource($showroom),
+        ]);
     }
 
     public function show($id)
@@ -47,6 +51,7 @@ class ShowroomController extends Controller
 
     public function update(Request $request, $id)
     {
+        
         $request->validate([
             'name' => 'required|string|max:255',
             'address' => 'required|string|max:255',

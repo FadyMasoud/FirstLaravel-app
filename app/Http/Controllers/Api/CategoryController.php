@@ -15,9 +15,21 @@ class CategoryController extends Controller
     {
         return CategoryResource::collection(Category::all());
     }
+    
+    public function getBodyKit()
+    {
+        return CategoryResource::collection(
+            Category::where('name', 'like', '%body kit%')
+                ->orWhere('name', 'like', '%Body Kit%')
+                ->get()
+        );
+        
+        
+    }
 
     public function store(Request $request)
     {
+        // dd($request->all());
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'pd_name' => 'required|string|max:255',
@@ -90,6 +102,9 @@ class CategoryController extends Controller
 
     public function update(Request $request, $id)
     {
+
+        //  dd($request->all(),$id);
+
        
 
         $validator = Validator::make($request->all(), [

@@ -45,6 +45,10 @@ Route::resource('comments', CommentController::class)->shallow();
 // Route::get('/posts/{id}', [PostController::class, 'show'])->name('posts.show');
 
 
+// Route::get('/test-log', function () {
+//     Log::info('Testing logging functionality.');
+//     return 'Log test completed.';
+// });
 
 
 

@@ -23,6 +23,7 @@ class PostResource extends JsonResource
             'user' => $this->user_id,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'image_link' => asset('storage/' . $this->images)
 
 
         ];

@@ -12,20 +12,8 @@ class Product extends Model
     use SoftDeletes;
 
     protected $table = 'Products';
-    protected $fillable = [
-        'id_category',
-        'id_showroom',
-        'name',
-        'images',
-        'description',
-        'price',
-        'speed',
-        'type',
-        'cylinder',
-        'color',
-        'brand',
-        'model',
-        'offer',
+    protected $fillable = ['id_category','id_showroom','name','images','description','price','speed','type','cylinder','color',
+    'brand','model', 'offer'
     ];
     protected $guarded = ['id'];
     protected $dates = ['created_at', 'updated_at', 'deleted_at'];
