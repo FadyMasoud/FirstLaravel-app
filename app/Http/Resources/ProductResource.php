@@ -31,6 +31,7 @@ class ProductResource extends JsonResource
             'brand' => $this->brand,
             'model' => $this->model,
             'offer' => $this->offer,
+            'stock'=>$this->stock,
             'image_link' => asset('storage/' . $this->images)
         ];
     }

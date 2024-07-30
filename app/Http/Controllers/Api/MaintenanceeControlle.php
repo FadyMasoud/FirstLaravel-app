@@ -18,16 +18,23 @@ class MaintenanceeControlle extends Controller
     public function index()
     {
         $maintenancee = Maintenancee::all();
+        if ($maintenancee->isEmpty()) {
+            return response()->json(['message' => 'No Have Maintenance Orders Yet.'], 404);
+        } else {
         return response()->json($maintenancee);
+        }
     }
     public function store(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'address' => 'required|string|max:255',
-            'contact_number' => 'nullable|string|max:20',
-            'email' => 'nullable|email|max:255',
-            'user_id' => 'required|exists:users,id',
+            'email' => 'required|email|max:255',
+            'phone' => 'required|string|max:20',
+            'car' => 'required|string',
+            'subject' => 'required|string',
+            'maintenance_center' => 'required|string',
+            'appointment' => 'required|string',
+            'user_id'=>'required|exists:users,id',
         ]);
 
         $maintenancee = Maintenancee::create($request->all());

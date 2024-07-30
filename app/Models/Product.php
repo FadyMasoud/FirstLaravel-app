@@ -13,7 +13,7 @@ class Product extends Model
 
     protected $table = 'Products';
     protected $fillable = ['id_category','id_showroom','name','images','description','price','speed','type','cylinder','color',
-    'brand','model', 'offer'
+    'brand','model', 'offer', 'stock'
     ];
     protected $guarded = ['id'];
     protected $dates = ['created_at', 'updated_at', 'deleted_at'];

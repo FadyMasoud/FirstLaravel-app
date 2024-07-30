@@ -17,7 +17,8 @@ class ProductController extends Controller
     //get all products
     public function index()
     {
-        return ProductResource::collection(Product::all());
+        return ProductResource::collection(Product::where('id_category', '<>', 4)->inRandomOrder()->get());
+        //علي حسب ال body kit category كام
     }
 
     
@@ -26,6 +27,13 @@ class ProductController extends Controller
     public function getProductsByCategory($id_category)
     {
         return ProductResource::collection(Product::where('id_category', $id_category)->get());
+    }
+
+    
+    //get products for each showroom
+    public function getProductsByShowroom($id_showroom)
+    {
+        return ProductResource::collection(Product::where('id_showroom', $id_showroom)->get());
     }
 
 
@@ -46,6 +54,7 @@ class ProductController extends Controller
             'brand' => 'required|string',
             'model' => 'required|string',
             'offer' => 'nullable|numeric',
+            'stock' => 'required|numeric',
         ], [
             'id_category.required' => 'Category is required',
             'id_showroom.required' => 'Showroom is required',
@@ -59,6 +68,7 @@ class ProductController extends Controller
             'color.required' => 'Color is required',
             'brand.required' => 'Brand is required',
             'model.required' => 'Model is required',
+            'stock.required' => 'Stock is required',
         ]);
 
         if ($validator->fails()) {
@@ -67,7 +77,8 @@ class ProductController extends Controller
 
             foreach ([
                 'id_category', 'id_showroom', 'name', 'images', 'price', 'speed',
-                'type', 'cylinder', 'color', 'brand', 'model'
+                'type', 'cylinder', 'color', 'brand', 'model', 'stock'
+
             ] as $field) {
                 if ($errors->has($field)) {
                     $errorMessage[] = $errors->first($field);
@@ -98,7 +109,7 @@ class ProductController extends Controller
             'color' => $request->color,
             'brand' => $request->brand,
             'model' => $request->model,
-            // 'offer' => $request->offer,
+            'offer' => $request->offer,
             'images' => $imagePath
 
         ]);
@@ -174,6 +185,7 @@ class ProductController extends Controller
             'brand' => 'required|string',
             'model' => 'required|string',
             'offer' => 'nullable|numeric',
+             'stock' => 'required|numeric',
             ],
             [
                 'id_category.required' => 'Category is required',
@@ -188,6 +200,7 @@ class ProductController extends Controller
                 'color.required' => 'Color is required',
                 'brand.required' => 'Brand is required',
                 'model.required' => 'Model is required',
+                'stock.required' => 'Stock is required',
             ] );
 
             if ($validator->fails()) {
@@ -196,7 +209,8 @@ class ProductController extends Controller
     
                 foreach ([
                     'id_category', 'id_showroom', 'name', 'images', 'price', 'speed',
-                    'type', 'cylinder', 'color', 'brand', 'model'
+                    'type', 'cylinder', 'color', 'brand', 'model',
+                    'stock'
                 ] as $field) {
                     if ($errors->has($field)) {
                         $errorMessage[] = $errors->first($field);
@@ -226,6 +240,7 @@ class ProductController extends Controller
         $product->brand = $request->brand;
         $product->model = $request->model;
         $product->offer = $request->offer;
+        $product->stock = $request->stock;
 
         if ($request->hasFile('images')) {
             // Delete the old image from storage

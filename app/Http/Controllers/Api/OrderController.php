@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\User;
 use App\Http\Resources\OrderResource;
+use App\Http\Resources\ProductResource;
+use App\Http\Resources\UserResource;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -14,14 +17,44 @@ class OrderController extends Controller
     public function index()
     {
         $orders = Order::all();
-        return OrderResource::collection($orders);
+
+        if ($orders->isEmpty()) {
+            return response()->json(['message' => 'No Have Orders Yet.'], 404);
+        }
+
+        $ordersWithUserAndProduct = $orders->map(function ($order) {
+            $order->user = new UserResource($order->user);
+            $order->product = new ProductResource($order->product);
+            return $order;
+        });
+
+        return $ordersWithUserAndProduct;
     }
 
 
-    public function show($id)
+    public function show($user_id)
     {
-        $order = Order::findOrFail($id);
-        return new OrderResource($order);
+        $orders = Order::where('user_id', $user_id)->get();
+        if ($orders->isEmpty()) {
+            return response()->json(['error' => 'Order not found'], 404);
+        }
+        return OrderResource::collection($orders);
+    }
+
+     public function getLastOrderByUserId($user_id)
+    {
+        $orders = Order::where('user_id', $user_id)->latest()->get();
+        $order = $orders->last();
+        if (!$order) {
+            return response()->json(['error' => 'Order not found'], 404);
+        }
+        $product = Product::find($order->product_id);
+        $user=user::find($order->user_id);
+        return [
+            'order' => new OrderResource($order),
+            'product' => new ProductResource($product),
+            'user' => new UserResource($user),
+        ];
     }
 
     public function store(Request $request)
@@ -38,7 +71,11 @@ class OrderController extends Controller
         $order->product_id = $request->product_id;
         $order->Qauntity = $request->Qauntity;
         $product = Product::find($request->product_id);
-        $order->total_price = $request->Qauntity * $product->price;
+        if ($product->offer > 0) {
+            $order->total_price = $request->Qauntity * $product->offer;
+        } else {
+            $order->total_price = $request->Qauntity * $product->price;
+        }
         $order->save();
 
         // Update the product stock
@@ -73,7 +110,11 @@ class OrderController extends Controller
         $order->user_id = $request->user_id;
         $order->product_id = $request->product_id;
         $order->Qauntity = $request->Qauntity;
-        $order->total_price = $request->Qauntity * $product->price;
+        if ($product->offer > 0) {
+            $order->total_price = $request->Qauntity * $product->offer;
+        } else {
+            $order->total_price = $request->Qauntity * $product->price;
+        }
 
         $order->save();
 
