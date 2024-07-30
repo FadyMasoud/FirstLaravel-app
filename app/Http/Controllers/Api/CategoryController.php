@@ -20,17 +20,29 @@ class CategoryController extends Controller
         );
     }
     
+    public function getAllCategory()
+    {
+        return CategoryResource::collection(
+            Category::all()
+        );
+    }
+    
     public function getFirstThreeCategory()
     {
         return CategoryResource::collection(
-            Category::limit(3)->get()
+            Category::where('name', 'not like', '%body kit%')
+                ->where('name', 'not like', '%Body Kit%')
+                ->limit(3)
+                ->get()
         );
     }
 
     public function getSecondThreeCategory()
     {
         return CategoryResource::collection(
-            Category::skip(3)->limit(3)->get()
+            Category::where('name', 'not like', '%body kit%')
+                ->where('name', 'not like', '%Body Kit%')
+                ->skip(3)->limit(3)->get()
         );
     }
     

@@ -55,6 +55,7 @@ Route::post('posts/{id}/restore', [PostQueryController::class, 'restore']);
 
 
 // Category Routes
+Route::get('allcategories', [CategoryController::class, 'getAllCategory']);
 //get all categories except a body kit in(home commponent)
 Route::get('categories', [CategoryController::class, 'index']);
 //get first three categories
