@@ -33,7 +33,7 @@ class MaintenanceeControlle extends Controller
             'car' => 'required|string',
             'subject' => 'required|string',
             'maintenance_center' => 'required|string',
-            'appointment' => 'required|string',
+            'appointment' => 'required|date',
             'user_id'=>'required|exists:users,id',
         ]);
 
